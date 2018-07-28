@@ -31,6 +31,7 @@
         <module>flexmark-ext-aside</module>
         <module>flexmark-ext-attributes</module>
         <module>flexmark-ext-autolink</module>
+        <module>flexmark-ext-confluence</module>
         <module>flexmark-ext-definition</module>
         <module>flexmark-ext-emoji</module>
         <module>flexmark-ext-enumerated-reference</module>
