@@ -5,62 +5,82 @@ import com.vladsch.flexmark.ast.ListItem;
 import com.vladsch.flexmark.ast.util.Parsing;
 import com.vladsch.flexmark.ext.confluence.ConfluenceBlock;
 import com.vladsch.flexmark.internal.*;
-import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.parser.block.*;
 import com.vladsch.flexmark.util.options.DataHolder;
 import com.vladsch.flexmark.util.sequence.BasedSequence;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class ConfluenceBlockParser extends BlockQuoteParser {
+public class ConfluenceBlockParser extends AbstractBlockParser {
+    //> **info:** About me
+    final private static String CONFLUENCE_BLOCK_START_FORMAT = "^>\\s\\*\\*(%s)\\*\\*(?:\\s+(%s))?\\s*$";
 
+    final ConfluenceBlock block;
+    //private BlockContent content = new BlockContent();
+    private final ConfluenceOptions options;
+    private final int contentIndent;
+    private boolean hadBlankLine;
 
-    public ConfluenceBlockParser(final DataHolder options, final BasedSequence marker) {
-        super(options, marker);
+    ConfluenceBlockParser(ConfluenceOptions options, int contentIndent) {
+        this.options = options;
+        this.contentIndent = contentIndent;
+        this.block = new ConfluenceBlock();
+    }
+
+    private int getContentIndent() {
+        return contentIndent;
+    }
+
+    @Override
+    public Block getBlock() {
+        return block;
+    }
+
+    @Override
+    public boolean isContainer() {
+        return true;
+    }
+
+    @Override
+    public boolean canContain(ParserState state, BlockParser blockParser, final Block block) {
+        return true;
+    }
+
+    @Override
+    public BlockContinue tryContinue(ParserState state) {
+        final int nonSpaceIndex = state.getNextNonSpaceIndex();
+        if (state.isBlank()) {
+            hadBlankLine = true;
+            return BlockContinue.atIndex(nonSpaceIndex);
+        } else if (!hadBlankLine && options.allowLazyContinuation) {
+            return BlockContinue.atIndex(nonSpaceIndex);
+        } else if (state.getIndent() >= options.contentIndent) {
+            int contentIndent = state.getColumn() + options.contentIndent;
+            return BlockContinue.atColumn(contentIndent);
+        } else {
+            return BlockContinue.none();
+        }
     }
 
     @Override
     public void closeBlock(ParserState state) {
-        getBlock().setCharsFromContent();
+        block.setCharsFromContent();
     }
-
-    static boolean isMarker(
-            final ParserState state,
-            final int index,
-            final boolean inParagraph,
-            final boolean inParagraphListItem,
-            final boolean allowLeadingSpace,
-            final boolean interruptsParagraph,
-            final boolean interruptsItemParagraph,
-            final boolean withLeadSpacesInterruptsItemParagraph
-    ) {
-        CharSequence line = state.getLine();
-        if ((!inParagraph || interruptsParagraph) && index < line.length() && line.charAt(index) == '>') {
-            if ((allowLeadingSpace || state.getIndent() == 0) && (!inParagraphListItem || interruptsItemParagraph)) {
-                if (inParagraphListItem && !withLeadSpacesInterruptsItemParagraph) {
-                    return state.getIndent() == 0;
-                } else {
-                    return state.getIndent() < state.getParsing().CODE_BLOCK_INDENT;
-                }
-            }
-        }
-        return false;
-    }
-
 
     public static class Factory implements CustomBlockParserFactory {
         @Override
         public Set<Class<? extends CustomBlockParserFactory>> getAfterDependents() {
-            return Collections.emptySet();
+            return null;
         }
 
         @Override
         public Set<Class<? extends CustomBlockParserFactory>> getBeforeDependents() {
             return new HashSet<Class<? extends CustomBlockParserFactory>>(Arrays.asList(
-             //       BlockQuoteParser.Factory.class,
+                //    BlockQuoteParser.Factory.class,
                     HeadingParser.Factory.class,
                     FencedCodeBlockParser.Factory.class,
                     HtmlBlockParser.Factory.class,
@@ -81,37 +101,79 @@ public class ConfluenceBlockParser extends BlockQuoteParser {
         }
     }
 
+    static boolean isMarker(
+            final ParserState state,
+            final int index,
+            final boolean inParagraph,
+            final boolean inParagraphListItem,
+            final ConfluenceOptions options
+    ) {
+        final boolean allowLeadingSpace = options.allowLeadingSpace;
+        final boolean interruptsParagraph = options.interruptsParagraph;
+        final boolean interruptsItemParagraph = options.interruptsItemParagraph;
+        final boolean withLeadSpacesInterruptsItemParagraph = options.withSpacesInterruptsItemParagraph;
+        CharSequence line = state.getLine();
+        if (!inParagraph || interruptsParagraph) {
+            if ((allowLeadingSpace || state.getIndent() == 0) && (!inParagraphListItem || interruptsItemParagraph)) {
+                if (inParagraphListItem && !withLeadSpacesInterruptsItemParagraph) {
+                    return state.getIndent() == 0;
+                } else {
+                    return state.getIndent() < state.getParsing().CODE_BLOCK_INDENT;
+                }
+            }
+        }
+        return false;
+    }
+
     private static class BlockFactory extends AbstractBlockParserFactory {
-        private final boolean allowLeadingSpace;
-        private final boolean interruptsParagraph;
-        private final boolean interruptsItemParagraph;
-        private final boolean withLeadSpacesInterruptsItemParagraph;
+        private final ConfluenceOptions options;
+
         BlockFactory(DataHolder options) {
             super(options);
-            allowLeadingSpace = Parser.BLOCK_QUOTE_ALLOW_LEADING_SPACE.getFrom( options);
-            interruptsParagraph = Parser.BLOCK_QUOTE_INTERRUPTS_PARAGRAPH.getFrom( options);
-            interruptsItemParagraph = Parser.BLOCK_QUOTE_INTERRUPTS_ITEM_PARAGRAPH.getFrom( options);
-            withLeadSpacesInterruptsItemParagraph = Parser.BLOCK_QUOTE_WITH_LEAD_SPACES_INTERRUPTS_ITEM_PARAGRAPH.getFrom( options);
+            this.options = new ConfluenceOptions(options);
         }
 
+
+
+        @Override
         public BlockStart tryStart(ParserState state, MatchedBlockParser matchedBlockParser) {
+            if (state.getIndent() >= 4) {
+                return BlockStart.none();
+            }
+
             int nextNonSpace = state.getNextNonSpaceIndex();
             BlockParser matched = matchedBlockParser.getBlockParser();
             boolean inParagraph = matched.isParagraphParser();
             boolean inParagraphListItem = inParagraph && matched.getBlock().getParent() instanceof ListItem && matched.getBlock() == matched.getBlock().getParent().getFirstChild();
 
-            if (isMarker(state, nextNonSpace, inParagraph, inParagraphListItem, allowLeadingSpace, interruptsParagraph, interruptsItemParagraph, withLeadSpacesInterruptsItemParagraph)) {
-                int newColumn = state.getColumn() + state.getIndent() + 1;
-                // optional following space or tab
-                if (Parsing.isSpaceOrTab(state.getLine(), nextNonSpace + 1)) {
-                    newColumn++;
+            if (isMarker(state, nextNonSpace, inParagraph, inParagraphListItem, options)) {
+                BasedSequence line = state.getLine();
+                BasedSequence trySequence = line.subSequence(nextNonSpace, line.length());
+                Parsing parsing = state.getParsing();
+                Pattern startPattern = Pattern.compile(String.format(CONFLUENCE_BLOCK_START_FORMAT, parsing.ATTRIBUTENAME, parsing.LINK_TITLE_STRING));
+                Matcher matcher = startPattern.matcher(trySequence);
+
+                if (matcher.find()) {
+                    // confluence block
+                   // BasedSequence openingMarker = line.subSequence(nextNonSpace + matcher.start(1), nextNonSpace + matcher.end(1));
+                    BasedSequence info = line.subSequence(nextNonSpace + matcher.start(1), nextNonSpace + matcher.end(1));
+                    BasedSequence titleChars = matcher.group(2) == null ? BasedSequence.NULL : line.subSequence(nextNonSpace + matcher.start(2), nextNonSpace + matcher.end(2));
+
+                    int contentOffset = options.contentIndent;
+
+                    ConfluenceBlockParser confluenceBlockParser = new ConfluenceBlockParser(options, contentOffset);
+                   // confluenceBlockParser.block.setOpeningMarker(openingMarker);
+                    confluenceBlockParser.block.setInfo(info);
+                    confluenceBlockParser.block.setTitleChars(titleChars);
+
+                    return BlockStart.of(confluenceBlockParser)
+                            .atIndex(line.length());
+                } else {
+                    return BlockStart.none();
                 }
-                return BlockStart.of(new ConfluenceBlockParser(state.getProperties(), state.getLine().subSequence(nextNonSpace, nextNonSpace + 1))).atColumn(newColumn);
             } else {
                 return BlockStart.none();
             }
         }
     }
-
-
 }
