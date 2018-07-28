@@ -1,8 +1,6 @@
 package com.vladsch.flexmark.ext.confluence;
 
 import com.vladsch.flexmark.ast.Block;
-import com.vladsch.flexmark.ast.BlockQuote;
-import com.vladsch.flexmark.ast.CustomBlock;
 import com.vladsch.flexmark.util.sequence.BasedSequence;
 
 import java.util.List;
@@ -15,19 +13,15 @@ import java.util.List;
  */
 public class ConfluenceBlock extends Block {
     private BasedSequence openingMarker = BasedSequence.NULL;
-    private BasedSequence info = BasedSequence.NULL;
-    protected BasedSequence titleOpeningMarker = BasedSequence.NULL;
+    private BasedSequence type = BasedSequence.NULL;
     protected BasedSequence title = BasedSequence.NULL;
-    protected BasedSequence titleClosingMarker = BasedSequence.NULL;
 
     @Override
     public BasedSequence[] getSegments() {
         return new BasedSequence[] {
                 openingMarker,
-                info,
-                titleOpeningMarker,
+                type,
                 title,
-                titleClosingMarker,
         };
     }
 
@@ -35,10 +29,8 @@ public class ConfluenceBlock extends Block {
     public BasedSequence[] getSegmentsForChars() {
         return new BasedSequence[] {
                 openingMarker,
-                info,
-                titleOpeningMarker,
+                type,
                 title,
-                titleClosingMarker,
         };
     }
 
@@ -47,8 +39,8 @@ public class ConfluenceBlock extends Block {
         BasedSequence content = getContentChars();
         int lines = getContentLines().size();
         segmentSpanChars(out, openingMarker, "open");
-        segmentSpanChars(out, info, "info");
-        delimitedSegmentSpanChars(out, titleOpeningMarker, title, titleClosingMarker, "title");
+        segmentSpanChars(out, type, "type");
+        segmentSpanChars(out, title, "title");
     }
 
     public ConfluenceBlock() {
@@ -58,10 +50,10 @@ public class ConfluenceBlock extends Block {
         super(chars);
     }
 
-    public ConfluenceBlock(BasedSequence chars, BasedSequence openingMarker, BasedSequence info, List<BasedSequence> segments) {
+    public ConfluenceBlock(BasedSequence chars, BasedSequence openingMarker, BasedSequence type, List<BasedSequence> segments) {
         super(chars, segments);
         this.openingMarker = openingMarker;
-        this.info = info;
+        this.type = type;
     }
 
     public BasedSequence getOpeningMarker() {
@@ -72,63 +64,28 @@ public class ConfluenceBlock extends Block {
         this.openingMarker = openingMarker;
     }
 
-    public void setInfo(BasedSequence info) {
-        this.info = info;
+    public void setType(BasedSequence type) {
+        this.type = type;
     }
 
-    public BasedSequence getInfo() {
-        return info;
+    public BasedSequence getType() {
+        return type;
     }
 
     public BasedSequence getTitle() {
         return title;
     }
 
-    public BasedSequence getTitleOpeningMarker() {
-        return titleOpeningMarker;
-    }
-
-    public void setTitleOpeningMarker(final BasedSequence titleOpeningMarker) {
-        this.titleOpeningMarker = titleOpeningMarker;
-    }
-
     public void setTitle(final BasedSequence title) {
         this.title = title;
     }
 
-    public BasedSequence getTitleClosingMarker() {
-        return titleClosingMarker;
-    }
-
-    public void setTitleClosingMarker(final BasedSequence titleClosingMarker) {
-        this.titleClosingMarker = titleClosingMarker;
-    }
-
-    public BasedSequence getTitleChars() {
-        return spanningChars(titleOpeningMarker, title, titleClosingMarker);
-    }
-
     public void setTitleChars(BasedSequence titleChars) {
         if (titleChars != null && titleChars != BasedSequence.NULL) {
-            int titleCharsLength = titleChars.length();
-            titleOpeningMarker = titleChars.subSequence(0, 1);
-            title = titleChars.subSequence(1, titleCharsLength - 1);
-            titleClosingMarker = titleChars.subSequence(titleCharsLength - 1, titleCharsLength);
+            title = titleChars;
         } else {
-            titleOpeningMarker = BasedSequence.NULL;
             title = BasedSequence.NULL;
-            titleClosingMarker = BasedSequence.NULL;
         }
     }
-
-
-    public enum Type{
-        INFO,
-        NOTE,
-        TIP,
-        WARNING
-    }
-
-
 
 }

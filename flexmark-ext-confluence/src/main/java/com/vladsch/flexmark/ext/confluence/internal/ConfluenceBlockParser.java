@@ -17,7 +17,8 @@ import java.util.regex.Pattern;
 
 public class ConfluenceBlockParser extends AbstractBlockParser {
     //> **info:** About me
-    final private static String CONFLUENCE_BLOCK_START_FORMAT = "^>\\s\\*\\*(%s)\\*\\*(?:\\s+(%s))?\\s*$";
+    // ^>\s\*\*([a-zA-Z_:][a-zA-Z0-9:._-]*):\*\*(?:\s+([a-zA-Z_:][a-zA-Z0-9:._-]*))?\s*$
+    final private static String CONFLUENCE_BLOCK_START_FORMAT = "^>\\s\\*\\*([a-zA-Z]*):\\*\\*(?:\\s+([a-zA-Z_:]*))?\\s*$";
 
     final ConfluenceBlock block;
     //private BlockContent content = new BlockContent();
@@ -156,14 +157,14 @@ public class ConfluenceBlockParser extends AbstractBlockParser {
                 if (matcher.find()) {
                     // confluence block
                    // BasedSequence openingMarker = line.subSequence(nextNonSpace + matcher.start(1), nextNonSpace + matcher.end(1));
-                    BasedSequence info = line.subSequence(nextNonSpace + matcher.start(1), nextNonSpace + matcher.end(1));
+                    BasedSequence blockType = line.subSequence(nextNonSpace + matcher.start(1), nextNonSpace + matcher.end(1));
                     BasedSequence titleChars = matcher.group(2) == null ? BasedSequence.NULL : line.subSequence(nextNonSpace + matcher.start(2), nextNonSpace + matcher.end(2));
 
                     int contentOffset = options.contentIndent;
 
                     ConfluenceBlockParser confluenceBlockParser = new ConfluenceBlockParser(options, contentOffset);
                    // confluenceBlockParser.block.setOpeningMarker(openingMarker);
-                    confluenceBlockParser.block.setInfo(info);
+                    confluenceBlockParser.block.setType(blockType);
                     confluenceBlockParser.block.setTitleChars(titleChars);
 
                     return BlockStart.of(confluenceBlockParser)
