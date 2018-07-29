@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 public class ConfluenceBlockParser extends AbstractBlockParser {
 
     final private static String CONFLUENCE_BLOCK_TYPES_ALLOWED_SPELLINGS = "[Ii]nfo|INFO|[Tt]ip|TIP|[Ww]arning|WARNING|[Nn]ote|NOTE";
-    final private static String CONFLUENCE_BLOCK_START_FORMAT = "^>\\s\\*\\*(%s):\\*\\*(?:\\s+([a-zA-Z_:]*))?\\s*$";
+    final private static String CONFLUENCE_BLOCK_START_FORMAT = "^>\\s\\*\\*(%s):\\*\\*(?:\\s+(.*))?\\s*$";
 
     final ConfluenceBlock block;
     //private BlockContent content = new BlockContent();

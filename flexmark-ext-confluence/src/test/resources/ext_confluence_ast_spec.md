@@ -130,6 +130,50 @@ Document[0, 86]
         Text[56, 83] chars:[56, 83, "conse …  elit"]
 ````````````````````````````````
 
+```````````````````````````````` example Blocks with title: 2
+> **info:** It's a very _complex_ title with юникод and numbers 1,2,3...
+> 
+> Lorem ipsum dolor sit amet, 
+> consectetur adipiscing elit
+>
+.
+{info}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit
+
+{info}
+
+.
+Document[0, 86]
+  ConfluenceBlock[4, 84] type:[4, 8, "info"] title:[12, 19, "Aboutme"]
+    BlockQuote[20, 84] marker:[20, 21, ">"]
+      Paragraph[25, 84] isTrailingBlankLine
+        Text[25, 52] chars:[25, 52, "Lorem … amet,"]
+        SoftLineBreak[53, 54]
+        Text[56, 83] chars:[56, 83, "conse …  elit"]
+````````````````````````````````
+
+```````````````````````````````` example Blocks with title: 3
+> **tip:** title with vertical bar | 123
+> 
+> Lorem ipsum dolor sit amet, 
+> consectetur adipiscing elit
+>
+.
+{info}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit
+
+{info}
+
+.
+Document[0, 86]
+  ConfluenceBlock[4, 84] type:[4, 8, "info"] title:[12, 19, "Aboutme"]
+    BlockQuote[20, 84] marker:[20, 21, ">"]
+      Paragraph[25, 84] isTrailingBlankLine
+        Text[25, 52] chars:[25, 52, "Lorem … amet,"]
+        SoftLineBreak[53, 54]
+        Text[56, 83] chars:[56, 83, "conse …  elit"]
+````````````````````````````````
+
 ### Complex content
 
 ```````````````````````````````` example Complex content: 1
@@ -158,7 +202,7 @@ Document[0, 88]
 ````````````````````````````````
 
 ```````````````````````````````` example Complex content: 1
-> **warning:** About_him
+> **warning:** About him
 > 
 > Lorem ipsum dolor sit amet, 
 >> consectetur adipiscing elit
@@ -169,7 +213,7 @@ Document[0, 88]
 > have a **strong** and _pure_ feeling
 
 .
-{warning}
+{warning:title=About him}
 Lorem ipsum dolor sit amet,
 
 {quote}
@@ -184,7 +228,7 @@ have a *strong* and _pure_ feeling
 
 .
 Document[0, 151]
-  ConfluenceBlock[4, 150] type:[4, 11, "warning"] title:[15, 24, "About_him"]
+  ConfluenceBlock[4, 150] type:[4, 11, "warning"] title:[15, 24, "About him"]
     BlockQuote[25, 150] marker:[25, 26, ">"]
       Paragraph[30, 59]
         Text[30, 57] chars:[30, 57, "Lorem … amet,"]
