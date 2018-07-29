@@ -34,7 +34,12 @@ public class ConfluenceBlockRenderer implements NodeRenderer {
         String macroOpen = "{"+node.getType().toLowerCase();
         html.line().raw(macroOpen).raw("}").line();
         inBlockQuote++;
-        context.renderChildren(node);
+        if (node.getFirstChild() instanceof BlockQuote) {
+            context.renderChildren(node.getFirstChild());
+        }
+        else {
+            context.renderChildren(node);
+        }
         inBlockQuote--;
         html.line().raw(macroOpen).raw("}").blankLine();
     }
