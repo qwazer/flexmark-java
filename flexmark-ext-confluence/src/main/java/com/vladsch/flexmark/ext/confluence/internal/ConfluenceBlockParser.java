@@ -16,9 +16,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ConfluenceBlockParser extends AbstractBlockParser {
-    //> **info:** About me
-    // ^>\s\*\*([a-zA-Z_:][a-zA-Z0-9:._-]*):\*\*(?:\s+([a-zA-Z_:][a-zA-Z0-9:._-]*))?\s*$
-    final private static String CONFLUENCE_BLOCK_START_FORMAT = "^>\\s\\*\\*([a-zA-Z]*):\\*\\*(?:\\s+([a-zA-Z_:]*))?\\s*$";
+
+    final private static String CONFLUENCE_BLOCK_TYPES_ALLOWED_SPELLINGS = "[Ii]nfo|INFO|[Tt]ip|TIP|[Ww]arning|WARNING|[Nn]ote|NOTE";
+    final private static String CONFLUENCE_BLOCK_START_FORMAT = "^>\\s\\*\\*(%s):\\*\\*(?:\\s+([a-zA-Z_:]*))?\\s*$";
 
     final ConfluenceBlock block;
     //private BlockContent content = new BlockContent();
@@ -151,7 +151,7 @@ public class ConfluenceBlockParser extends AbstractBlockParser {
                 BasedSequence line = state.getLine();
                 BasedSequence trySequence = line.subSequence(nextNonSpace, line.length());
                 Parsing parsing = state.getParsing();
-                Pattern startPattern = Pattern.compile(String.format(CONFLUENCE_BLOCK_START_FORMAT, parsing.ATTRIBUTENAME, parsing.LINK_TITLE_STRING));
+                Pattern startPattern = Pattern.compile(String.format(CONFLUENCE_BLOCK_START_FORMAT, CONFLUENCE_BLOCK_TYPES_ALLOWED_SPELLINGS));
                 Matcher matcher = startPattern.matcher(trySequence);
 
                 if (matcher.find()) {
