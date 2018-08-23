@@ -64,6 +64,7 @@
         <module>flexmark-test-util</module>
         <module>flexmark-util</module>
         <module>flexmark-youtrack-converter</module>
+        <module>flexmark-confluence-wiki-converter</module>
     </modules>
 
     <properties>
