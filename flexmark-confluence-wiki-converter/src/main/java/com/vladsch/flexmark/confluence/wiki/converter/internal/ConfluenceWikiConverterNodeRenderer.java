@@ -28,32 +28,33 @@ public class ConfluenceWikiConverterNodeRenderer extends JiraConverterNodeRender
     public Set<NodeRenderingHandler<?>> getNodeRenderingHandlers() {
 
         Set<NodeRenderingHandler<?>> parentHandlers = super.getNodeRenderingHandlers();
-        NodeRenderingHandler<LinkRef> linkRefHandler = new NodeRenderingHandler<LinkRef>(LinkRef.class, new CustomNodeRenderer<LinkRef>() {
-            @Override
-            public void render(LinkRef node, NodeRendererContext context, HtmlWriter html) { ConfluenceWikiConverterNodeRenderer.this.render(node, context, html); }
-        });
+        //NodeRenderingHandler<LinkRef> linkRefHandler = new NodeRenderingHandler<LinkRef>(LinkRef.class, new CustomNodeRenderer<LinkRef>() {
+        //    @Override
+        //    public void render(LinkRef node, NodeRendererContext context, HtmlWriter html) { ConfluenceWikiConverterNodeRenderer.this.render(node, context, html); }
+        //});
 
-        return replaceNodeRenderingHandlerOfType(parentHandlers, LinkRef.class, linkRefHandler );
+    //    return replaceNodeRenderingHandlerOfType(parentHandlers, LinkRef.class, linkRefHandler );
+        return parentHandlers;
     }
 
-    private static Set<NodeRenderingHandler<?>> replaceNodeRenderingHandlerOfType(
-            final Set<NodeRenderingHandler<?>> handlers,
-            final Class<LinkRef> aClass,
-            final NodeRenderingHandler<LinkRef> handler) {
-
-        Set<NodeRenderingHandler<?>> result = new HashSet<>();
-        for (NodeRenderingHandler<?> item : handlers) {
-            if (!item.getNodeType().equals(aClass)) {
-                result.add(item);
-            }
-        }
-        result.add(handler);
-        return  result;
-    }
-
-    private void render(LinkRef node, NodeRendererContext context, HtmlWriter html) {
-       html.raw("LinkRef"); //todo
-    }
+    //private static Set<NodeRenderingHandler<?>> replaceNodeRenderingHandlerOfType(
+    //        final Set<NodeRenderingHandler<?>> handlers,
+    //        final Class<LinkRef> aClass,
+    //        final NodeRenderingHandler<LinkRef> handler) {
+    //
+    //    Set<NodeRenderingHandler<?>> result = new HashSet<>();
+    //    for (NodeRenderingHandler<?> item : handlers) {
+    //        if (!item.getNodeType().equals(aClass)) {
+    //            result.add(item);
+    //        }
+    //    }
+    //    result.add(handler);
+    //    return  result;
+    //}
+    //
+    //private void render(LinkRef node, NodeRendererContext context, HtmlWriter html) {
+    //   html.raw("LinkRef"); //todo
+    //}
 
 
     public static class Factory implements NodeRendererFactory {
