@@ -4,6 +4,7 @@ import com.vladsch.flexmark.ast.Link;
 import com.vladsch.flexmark.ast.LinkRef;
 import com.vladsch.flexmark.ast.Node;
 import com.vladsch.flexmark.confluence.wiki.converter.ConfluenceWikiConverterExtension;
+import com.vladsch.flexmark.confluence.wiki.converter.ConfluenceWikiPageContext;
 import com.vladsch.flexmark.html.LinkResolver;
 import com.vladsch.flexmark.html.LinkResolverFactory;
 import com.vladsch.flexmark.html.renderer.LinkResolverContext;
@@ -27,17 +28,32 @@ public class ConfluenceRefLinkResolver implements LinkResolver {
     @Override
     public ResolvedLink resolveLink(final Node node, final LinkResolverContext context, final ResolvedLink link) {
         if (node instanceof LinkRef || node instanceof Link) {
-            String prefix = ConfluenceWikiConverterExtension.CONFLUENCE_LINK_PAGE_TITLE_PREFIX.getFrom(context.getOptions());
-            if (!startsWithInternetProtocolUrl(link.getUrl())) {
-                //todo startsWithPageTitle - It is not [#anchor], not [spacekey:pagetitle], not [/2004/01/12/blogposttitle], not [~username]
-                String url = prefix + link.getUrl();
-                return link.withStatus(LinkStatus.VALID)
-                        .withUrl(url);
+
+            ConfluenceWikiPageContext wikiPageContext =  ConfluenceWikiConverterExtension.CONFLUENCE_WIKI_PAGE_CONTEXT.getFrom(context.getOptions());
+
+            //todo if not null, etc
+
+            if (ConfluenceWikiPageContext.contains(wikiPageContext, normalizeUrl(link.getUrl()))){
+
+               //todo String url = wikiPageContext,getPageTitleByURl
             }
+
+
+            //String prefix = ConfluenceWikiConverterExtension.CONFLUENCE_LINK_PAGE_TITLE_PREFIX.getFrom(context.getOptions());
+            //if (!startsWithInternetProtocolUrl(link.getUrl())) {
+            //    //todo startsWithPageTitle - It is not [#anchor], not [spacekey:pagetitle], not [/2004/01/12/blogposttitle], not [~username]
+            //    String url = prefix + link.getUrl();
+            //    return link.withStatus(LinkStatus.VALID)
+            //            .withUrl(url);
+            //}
 
         }
 
         return link;
+    }
+
+    private String normalizeUrl(final String url) {
+        return null;
     }
 
     public static boolean startsWithInternetProtocolUrl(String str) {
