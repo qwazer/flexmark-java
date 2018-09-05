@@ -2,34 +2,39 @@ package com.vladsch.flexmark.confluence.wiki.converter;
 
 import java.util.Map;
 
+/**
+ * <p>
+ * ConfluenceWikiPageContext holds <code>urlReplacements</code> map.
+ * </p>
+ * For example, if you have file "first.md" with link to page "second.md"
+ * <code>
+ *     [second.md]
+ * </code>
+ *
+ * And title of page "second.md" in Confluence is "My second title".
+ * For replacement of [second.md] to
+ * <code>
+ *     [My second title]
+ * </code>
+ * put appropriate replacement entry to urlReplacements map
+ * and pass ConfluenceWikiPageContext object as parameter for renderer.
+ */
 public class ConfluenceWikiPageContext {
 
-    private String url;
 
-    private Map<String,String> urlByTitles;
+    private Map<String,String> urlReplacements;
 
-    public ConfluenceWikiPageContext() { //todo make privat add factory
+
+    public ConfluenceWikiPageContext(final Map<String, String> urlReplacements) {
+        this.urlReplacements = urlReplacements;
     }
 
-    public ConfluenceWikiPageContext(final String url, final Map<String, String> urlByTitles) {
-        this.url = url;
-        this.urlByTitles = urlByTitles;
+    public Map<String, String> getUrlReplacements() {
+        return urlReplacements;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(final String url) {
-        this.url = url;
-    }
-
-    public Map<String, String> getUrlByTitles() {
-        return urlByTitles;
-    }
-
-    public void setUrlByTitles(final Map<String, String> urlByTitles) {
-        this.urlByTitles = urlByTitles;
+    public void setUrlReplacements(final Map<String, String> urlReplacements) {
+        this.urlReplacements = urlReplacements;
     }
 
     public static boolean contains(ConfluenceWikiPageContext context, final String url) {
