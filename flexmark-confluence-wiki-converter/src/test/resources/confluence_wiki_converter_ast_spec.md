@@ -774,6 +774,38 @@ Document[0, 382]
 ````````````````````````````````
 
 
+### Links resolution
+
+Work with urlReplacements map in Confluence Wiki Page Context 
+
+```````````````````````````````` example Links resolution: 1
+[link_alias](second.md)
+
+.
+[link_alias|My second page]
+
+.
+Document[0, 25]
+  Paragraph[0, 24] isTrailingBlankLine
+    Link[0, 23] textOpen:[0, 1, "["] text:[1, 11, "link_alias"] textClose:[11, 12, "]"] linkOpen:[12, 13, "("] url:[13, 22, "second.md"] pageRef:[13, 22, "second.md"] linkClose:[22, 23, ")"]
+      Text[1, 11] chars:[1, 11, "link_alias"]
+````````````````````````````````
+
+
+```````````````````````````````` example Links resolution: 2
+[link_alias](./second.md)
+
+.
+[link_alias|My second page]
+
+.
+Document[0, 25]
+  Paragraph[0, 24] isTrailingBlankLine
+    Link[0, 23] textOpen:[0, 1, "["] text:[1, 11, "link_alias"] textClose:[11, 12, "]"] linkOpen:[12, 13, "("] url:[13, 22, "second.md"] pageRef:[13, 22, "second.md"] linkClose:[22, 23, ")"]
+      Text[1, 11] chars:[1, 11, "link_alias"]
+````````````````````````````````
+
+
 ## Tables Extension
 
 Converts pipe separated tables to ConfluenceWiki tables

@@ -29,7 +29,14 @@ public class ComboConfluenceWikiConverterSpecTest extends ComboSpecTestCase {
                     )
             )
             .set(WikiLinkExtension.ALLOW_ANCHORS, true)
-            .set(ConfluenceWikiConverterExtension.CONFLUENCE_LINK_PAGE_TITLE_PREFIX, "My prefix - ");
+            .set(ConfluenceWikiConverterExtension.CONFLUENCE_WIKI_PAGE_CONTEXT, new ConfluenceWikiPageContext(replacementMap()));
+
+
+    private static Map<String,String> replacementMap(){
+        Map<String,String> map = new HashMap<>();
+        map.put("second.md", "My second page");
+        return map;
+    }
 
     private static final Map<String, DataHolder> optionsMap = new HashMap<String, DataHolder>();
     static {
