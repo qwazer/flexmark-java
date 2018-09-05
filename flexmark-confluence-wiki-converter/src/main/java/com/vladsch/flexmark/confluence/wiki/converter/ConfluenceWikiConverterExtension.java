@@ -11,7 +11,7 @@ import com.vladsch.flexmark.util.options.MutableDataHolder;
 public class ConfluenceWikiConverterExtension implements  Parser.ParserExtension, HtmlRenderer.HtmlRendererExtension {
 
     public static final DataKey<String> CONFLUENCE_LINK_PAGE_TITLE_PREFIX = new DataKey<String>("CONFLUENCE_LINK_PAGE_TITLE_PREFIX", "");
-    public static final DataKey<ConfluenceWikiPageContext> CONFLUENCE_WIKI_PAGE_CONTEXT = new DataKey<ConfluenceWikiPageContext>("CONFLUENCE_WIKI_PAGE_CONTEXT", new ConfluenceWikiPageContext());
+    public static final DataKey<ConfluenceWikiPageContext> CONFLUENCE_WIKI_PAGE_CONTEXT = new DataKey<ConfluenceWikiPageContext>("CONFLUENCE_WIKI_PAGE_CONTEXT", new ConfluenceWikiPageContext(null));
 
 
     private ConfluenceWikiConverterExtension() {
